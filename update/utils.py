@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import toolz.curried
+import cytoolz.curried
 import datetime
 import os
 import sys
@@ -28,7 +28,7 @@ def identity(x):
     return x
 
 
-@toolz.curry
+@cytoolz.curry
 def diff(x, y):
     return [key for key in x if key not in y]
 

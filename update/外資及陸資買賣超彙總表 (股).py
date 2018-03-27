@@ -2,7 +2,7 @@ import psycopg2
 import sqlite3
 import pandas as pd
 import numpy as np
-import toolz.curried
+import cytoolz.curried
 from typing import List
 
 import os
@@ -32,12 +32,12 @@ integer_columns = list(filter(lambda x: x not in (date_columns + varchar_columns
 types = {'date': date_columns, 'str': varchar_columns, 'int': integer_columns}
 cols = ['年月日']
 
-rows1 = toolz.compose(utils.to_dict, utils.as_type(types), sqlc.s_dist_lite(conn_lite, table))(cols)
-rows2 = toolz.compose(utils.to_dict, utils.as_type(types), sqlc.s_dist_pg(conn_pg, table))(cols)
+rows1 = cytoolz.compose(utils.to_dict, utils.as_type(types), sqlc.s_dist_lite(conn_lite, table))(cols)
+rows2 = cytoolz.compose(utils.to_dict, utils.as_type(types), sqlc.s_dist_pg(conn_pg, table))(cols)
 rows = utils.diff(rows1, rows2)
 
 
-@toolz.curry
+@cytoolz.curry
 def transform(dtypes: dict, df: pd.DataFrame) -> pd.DataFrame:
     df = df.rename(columns={'買進股數': '外資買進股數', '賣出股數': '外資賣出股數', '買賣超股數': '外資買賣超股數', '鉅額交易': '外資鉅額交易'}).replace('--',np.nan).replace('NaN', 0).fillna(0)
     df[['外資鉅額交易']] = df[['外資鉅額交易']].applymap(lambda x: 0 if x == ' ' else 1)
@@ -46,7 +46,7 @@ def transform(dtypes: dict, df: pd.DataFrame) -> pd.DataFrame:
 
 
 def read_insert(row: list) -> List:
-    return toolz.compose(dftosql.i_pg_batch(conn_pg, table), transform(types), sqlc.s_where_lite(conn_lite, table))(row)
+    return cytoolz.compose(dftosql.i_pg_batch(conn_pg, table), transform(types), sqlc.s_where_lite(conn_lite, table))(row)
 
 
 list(map(read_insert, rows))

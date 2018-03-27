@@ -2,7 +2,7 @@ import psycopg2
 import sqlite3
 import pandas as pd
 import numpy as np
-import toolz.curried
+import cytoolz.curried
 from typing import List
 import os
 import sys
@@ -32,12 +32,12 @@ real_columns = list(filter(lambda x: x not in (date_columns + varchar_columns), 
 types = {'date': date_columns, 'str': varchar_columns, 'float': real_columns}
 cols_dist = ['年月']
 
-rows1 = toolz.compose(utils.to_dict, utils.as_type(types), sqlc.s_dist_lite(conn_lite, table))(cols_dist)
-rows2 = toolz.compose(utils.to_dict, utils.as_type(types), sqlc.s_dist_pg(conn_pg, table))(cols_dist)
+rows1 = cytoolz.compose(utils.to_dict, utils.as_type(types), sqlc.s_dist_lite(conn_lite, table))(cols_dist)
+rows2 = cytoolz.compose(utils.to_dict, utils.as_type(types), sqlc.s_dist_pg(conn_pg, table))(cols_dist)
 rows = utils.diff(rows1, rows2)
 
 
-@toolz.curry
+@cytoolz.curry
 def transform(dtypes: dict, df: pd.DataFrame) -> pd.DataFrame:
     df = df[columns].replace('--', 0).replace('NaN', 0).fillna(0)
     df = df.rename(columns={'工業及服務業受僱員工淨進入率(%)': '工業及服務業受僱員工淨進入率','失業率(%)': '失業率', '製造業存貨率(%)': '製造業存貨率'}).replace('--', 0).replace('NaN', 0).fillna(0)
@@ -46,7 +46,7 @@ def transform(dtypes: dict, df: pd.DataFrame) -> pd.DataFrame:
 
 
 def read_insert(row: list) -> List:
-    return toolz.compose(dftosql.i_pg_batch(conn_pg, table), transform(types), sqlc.s_where_lite(conn_lite, table))(row)
+    return cytoolz.compose(dftosql.i_pg_batch(conn_pg, table), transform(types), sqlc.s_where_lite(conn_lite, table))(row)
 
 
 list(map(read_insert, rows))

@@ -15,8 +15,6 @@ import dftosql
 mode = 'create'
 ## --- read from sqlite ---
 
-os.chdir('/home/david/Documents/db/')
-
 #--- summary ---
 # connect
 conn_lite = conn_local_lite('summary.sqlite3')
