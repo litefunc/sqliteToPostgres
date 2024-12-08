@@ -39,6 +39,6 @@ df[realColumns] = df[realColumns].astype(float)
 
 # create table
 columns = dateColumn + varcharColumns + realColumns
-fieldTypes = ['date' for col in dateColumn] + ['varchar(14)' for col in varcharColumns] + ['real' for col in realColumns]
+fieldTypes = ['date' for col in dateColumn] + ['varchar(16)' for col in varcharColumns] + ['real' for col in realColumns]
 primaryKeys = ['年月日', '成交統計']
 sqlc.createTablePostgre(tablename, columns, fieldTypes, primaryKeys, conn_pg)
