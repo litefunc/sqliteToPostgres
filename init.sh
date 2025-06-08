@@ -2,4 +2,4 @@
 
 bash ./create/create.sh
 
-python summary.py
+python3 summary.py
